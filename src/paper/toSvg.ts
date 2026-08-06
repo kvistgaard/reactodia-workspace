@@ -141,12 +141,64 @@ function addWatermark(svg: SVGElement, viewBox: Rect, watermarkSvg: string) {
 function collectAppliedCssFromDocument(targetSubtree: Element): CSSStyleRule[] {
     const appliedRules: CSSStyleRule[] = [];
     enumerateStylesheets(rule => {
-        const selectorWithoutPseudo = rule.selectorText.replace(/::[a-zA-Z-]+$/, '');
-        if (targetSubtree.querySelector(selectorWithoutPseudo)) {
+        const applies = toMatchableSelectors(rule.selectorText).some(selector => {
+            try {
+                return Boolean(targetSubtree.querySelector(selector));
+            } catch {
+                return false;
+            }
+        });
+        if (applies) {
             appliedRules.push(rule);
         }
     });
     return appliedRules;
+}
+
+/**
+ * Turns a CSS selector list into base selectors usable with `querySelector`:
+ * a pseudo-element is always the last part of a selector and cannot be matched,
+ * so its trailing `::x` is dropped and selectors left empty (as in a
+ * `*, ::before, ::after` reset) are removed.
+ */
+export function toMatchableSelectors(selectorText: string): string[] {
+    return splitSelectorList(selectorText)
+        .map(selector => selector.replace(/::[\w-]+(\([^)]*\))?\s*$/, '').trim())
+        .filter(selector => selector.length > 0);
+}
+
+/** Splits a selector list on top-level commas, ignoring `()`, `[]` and strings. */
+function splitSelectorList(selectorText: string): string[] {
+    const selectors: string[] = [];
+    let depth = 0;
+    let inAttibute = false;
+    let inQuote: '"' | '\'' | undefined;
+    let start = 0;
+    for (let i = 0; i < selectorText.length; i++) {
+        const ch = selectorText[i];
+        if (inQuote !== undefined) {
+            if (ch === inQuote && selectorText[i - 1] !== '\\') {
+                inQuote = undefined;
+            }
+        } else if (ch === '"' || ch === '\'') {
+            inQuote = ch;
+        } else if (inAttibute) {
+            if (ch === ']') {
+                inAttibute = false;
+            }
+        } else if (ch === '[') {
+            inAttibute = true;
+        } else if (ch === '(') {
+            depth++;
+        } else if (ch === ')') {
+            depth--;
+        } else if (ch === ',' && depth === 0) {
+            selectors.push(selectorText.slice(start, i));
+            start = i + 1;
+        }
+    }
+    selectors.push(selectorText.slice(start));
+    return selectors;
 }
 
 function collectImageUrlsFromElements(
