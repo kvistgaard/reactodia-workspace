@@ -4,12 +4,14 @@ All notable changes to the Reactodia will be documented in this document.
 The format is based on [Keep a Changelog](http://keepachangelog.com/) and this project adheres to [Semantic Versioning](http://semver.org/).
 
 ## [Unreleased]
+#### 🐛 Fixed
+- Fix an error on canvas export when a host page has CSS rules with certain selectors on pseudo-elements like `*, ::before, ::after`. (by [@aindlq](https://github.com/aindlq))
 
 ## [0.35.1] - 2026-07-10
 #### 🐛 Fixed
 - Fix relation having changed `data` but missing from `AuthoringState` when the source or target entity becomes deleted then restored back.
 - Fix grouped relation (`RelationGroup` item) does not updating its `data` when changed by `EditorController`.
-- Fix `ConnectionsMenu` displaying no links when there is only a single incoming/outgoing relation type. (by @cristianvasquez)
+- Fix `ConnectionsMenu` displaying no links when there is only a single incoming/outgoing relation type. (by [@cristianvasquez](https://github.com/cristianvasquez))
 - Restore scroll position in `ConnectionsMenu` when going back to relation types from instances list.
 - Exclude collapsed `DropdownMenu` and `UnifiedSearch` content from Tab-navigation.
 - Exclude canvas elements from Tab-navigation unless the element is only one selected.
