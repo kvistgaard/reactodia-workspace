@@ -4,6 +4,8 @@ All notable changes to the Reactodia will be documented in this document.
 The format is based on [Keep a Changelog](http://keepachangelog.com/) and this project adheres to [Semantic Versioning](http://semver.org/).
 
 ## [Unreleased]
+
+## [0.35.2] - 2026-08-08
 #### 🐛 Fixed
 - Fix an error on canvas export when a host page has CSS rules with certain selectors on pseudo-elements like `*, ::before, ::after`. (by [@aindlq](https://github.com/aindlq))
 
@@ -730,12 +732,13 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/) and this p
 - Moved default type style and link customizations into opt-in `SemanticTypeStyles` and `OntologyLinkTemplates`.
 
 #### 🔧 Maintenance
-- Enabled full `strict` TypeScript compiler mode with null checks.
+- Enabled full `strict` TypeScri[0.35.1]: https://github.com/reactodia/reactodia-workspace/compare/v0.35.0...v0.35.1pt compiler mode with null checks.
 - Migrated from legacy React Context to the modern one (`React.createContext()`).
 - Use RDF/JS-compatible IRI and literal terms.
 - Removed blank nodes discovery support from `SparqlDataProvider` (might be reimplemented in the future).
 
-[Unreleased]: https://github.com/reactodia/reactodia-workspace/compare/v0.35.1...HEAD
+[Unreleased]: https://github.com/reactodia/reactodia-workspace/compare/v0.35.2...HEAD
+[0.35.2]: https://github.com/reactodia/reactodia-workspace/compare/v0.35.1...v0.35.2
 [0.35.1]: https://github.com/reactodia/reactodia-workspace/compare/v0.35.0...v0.35.1
 [0.35.0]: https://github.com/reactodia/reactodia-workspace/compare/v0.34.1...v0.35.0
 [0.34.1]: https://github.com/reactodia/reactodia-workspace/compare/v0.34.0...v0.34.1
