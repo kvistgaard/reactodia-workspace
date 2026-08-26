@@ -722,18 +722,18 @@ const OwlRdfsSettingsOverride: Partial<SparqlDataProviderSettings> = {
         }
     `,
     linkTypesStatisticsQuery: `
-        SELECT ?link ?outCount ?inCount
+        SELECT (\${linkId} as ?link) (COALESCE(sum(?__out), 0) as ?outCount) (COALESCE(sum(?__in), 0) as ?inCount)
         WHERE {
             {
-                SELECT (\${linkId} as ?link) (count(?outObject) as ?outCount) WHERE {
+                SELECT (1 as ?__out) (0 as ?__in) WHERE {
                     \${linkConfigurationOut}
                     \${navigateElementFilterOut}
-                } LIMIT 101
-            } {
-                SELECT (\${linkId} as ?link) (count(?inObject) as ?inCount) WHERE {
+                }
+            } UNION {
+                SELECT (0 as ?__out) (1 as ?__in) WHERE {
                     \${linkConfigurationIn}
                     \${navigateElementFilterIn}
-                } LIMIT 101
+                }
             }
         }
     `,

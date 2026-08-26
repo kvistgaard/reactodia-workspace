@@ -665,9 +665,12 @@ export class SparqlDataProvider implements DataProvider {
         const navigateElementFilterOut = this.acceptBlankNodes
             ? 'FILTER (IsIri(?outObject) || IsBlank(?outObject))'
             : 'FILTER IsIri(?outObject)';
+        // ?inObject is in the subject position where only blank nodes are possible
+        // besides IRIs, and isIri() there causes some endpoints (e.g. Virtuoso)
+        // to choose a catastrophic query plan scanning the whole graph
         const navigateElementFilterIn = this.acceptBlankNodes
-            ? 'FILTER (IsIri(?inObject) || IsBlank(?inObject))'
-            : 'FILTER IsIri(?inObject)';
+            ? ''
+            : 'FILTER(!isBlank(?inObject))';
 
         const foundLinkStats: DataProviderLinkCount[] = [];
         await Promise.all(connectedLinkTypes.map(async ({linkType, hasInLink, hasOutLink}) => {
@@ -887,16 +890,22 @@ export class SparqlDataProvider implements DataProvider {
 
             const linkPattern = refLinkType || '?link';
             const bindType = refLinkType ? `BIND(${refLinkType} as ?link)` : '';
-            // FILTER(IsIri()) is used to prevent blank nodes appearing in results
-            const blankFilter = this.acceptBlankNodes
+            // Filters prevent blank nodes and literals appearing in results;
+            // in the subject position only blank nodes are possible, and isIri()
+            // there is avoided because it causes some endpoints (e.g. Virtuoso)
+            // to choose a catastrophic query plan scanning the whole graph
+            const outFilter = this.acceptBlankNodes
                 ? 'FILTER(isIri(?inst) || isBlank(?inst))'
                 : 'FILTER(isIri(?inst))';
+            const inFilter = this.acceptBlankNodes
+                ? ''
+                : 'FILTER(!isBlank(?inst))';
 
             if (!direction || direction === 'out') {
-                unionParts.push(`{ ${refElementIRI} ${linkPattern} ?inst BIND("out" as ?direction) ${bindType} ${blankFilter} }`);
+                unionParts.push(`{ ${refElementIRI} ${linkPattern} ?inst BIND("out" as ?direction) ${bindType} ${outFilter} }`);
             }
             if (!direction || direction === 'in') {
-                unionParts.push(`{ ?inst ${linkPattern} ${refElementIRI} BIND("in" as ?direction) ${bindType} ${blankFilter} }`);
+                unionParts.push(`{ ?inst ${linkPattern} ${refElementIRI} BIND("in" as ?direction) ${bindType} ${inFilter} }`);
             }
         }
 

@@ -4,6 +4,10 @@ All notable changes to the Reactodia will be documented in this document.
 The format is based on [Keep a Changelog](http://keepachangelog.com/) and this project adheres to [Semantic Versioning](http://semver.org/).
 
 ## [Unreleased]
+#### 🐛 Fixed
+- Fix `SparqlDataProvider` queries for connected elements hanging on some endpoints (e.g. Virtuoso chooses a catastrophic query plan): filter out blank nodes on the incoming-link patterns with `FILTER(!isBlank(...))` instead of `FILTER(isIri(...))`, which is equivalent in the subject position where a literal is not possible.
+- Fix link type statistics query in `OwlRdfsSettings`/`OwlStatsSettings` being rejected by the Virtuoso cost estimator ("The estimated execution time ... exceeds the limit"): count incoming and outgoing links via `UNION` with an outer `sum()` instead of joining two aggregate sub-queries; counts stay exact, and the previous `LIMIT 101` is dropped as it applied to a single-row aggregate result, i.e. never.
+- Fix error on a link statistics response with unbound counts, which some endpoints return when aggregating over an empty solution group: treat a missing count as 0 (with `COALESCE` in the default query as well).
 
 ## [0.35.2] - 2026-08-08
 #### 🐛 Fixed
