@@ -8,7 +8,7 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/) and this p
 - Extend SPARQL example connection dialog:
   * optional HTTP Basic authentication (credentials are kept in tab-scoped session storage, not in the URL);
   * optional restriction of all queries to one or more named graphs via SPARQL Protocol `default-graph-uri` parameters;
-  * recently used connections (endpoint, graphs, username – no passwords) persisted in local storage for quick re-connection.
+  * saved and recent connections (endpoint, graphs, username – no passwords) persisted in local storage: an unnamed connection rotates through the most recent few, a named one is pinned permanently; activating one connects directly, or pre-fills the form when a password needs re-entering.
 
 ## [0.35.2] - 2026-08-08
 #### 🐛 Fixed
